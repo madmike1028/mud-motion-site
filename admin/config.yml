@@ -1,25 +1,23 @@
-backend:
-  name: git-gateway
-  branch: main
-
-media_folder: "media/uploads"
-public_folder: "/media/uploads"
-
-collections:
-  - name: "albums"
-    label: "Photo Albums"
-    folder: "media/albums"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Album Name", name: "title", widget: "string" }
-      - { label: "Photos", name: "images", widget: "list", field: {label: Image, name: image, widget: image} }
-
-  - name: "videos"
-    label: "Video Albums"
-    folder: "media/videos"
-    create: true
-    slug: "{{slug}}"
-    fields:
-      - { label: "Video Title", name: "title", widget: "string" }
-      - { label: "Video File", name: "video", widget: "file" }
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Content Manager</title>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+</head>
+<body>
+  <script>
+    if (window.netlifyIdentity) {
+      window.netlifyIdentity.on("init", function(user) {
+        if (!user) {
+          window.netlifyIdentity.on("login", function() {
+            document.location.href = "/admin/";
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
