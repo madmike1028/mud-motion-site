@@ -19,14 +19,21 @@
     }
 
     html { scroll-behavior: smooth; }
-    body { font-family: Arial, sans-serif; background: #000; color: var(--text); overflow-x: hidden; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
     a { color: inherit; text-decoration: none; }
     button { font-family: inherit; }
     img { display: block; max-width: 100%; }
 
     .hero {
       position: relative;
-      min-height: 44vh;
+      min-height: 430px;
+      height: 430px;
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -35,6 +42,7 @@
       background: #000;
       isolation: isolate;
     }
+
     .hero-bg {
       position: absolute;
       inset: 0;
@@ -43,42 +51,49 @@
       object-fit: cover;
       object-position: center center;
       z-index: -3;
-      filter: brightness(0.78) contrast(1.02);
+      filter: brightness(0.82) contrast(1.02);
     }
+
     .hero-overlay {
       position: absolute;
       inset: 0;
       z-index: -2;
       pointer-events: none;
       background:
-        linear-gradient(to bottom,
-          rgba(0,0,0,0.10) 0%,
-          rgba(0,0,0,0.10) 30%,
-          rgba(0,0,0,0.28) 64%,
-          rgba(0,0,0,0.60) 100%);
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.08) 0%,
+          rgba(0,0,0,0.08) 34%,
+          rgba(0,0,0,0.22) 66%,
+          rgba(0,0,0,0.56) 100%
+        );
     }
+
     .hero-inner {
       width: min(94vw, 1300px);
-      min-height: 44vh;
+      height: 430px;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding: 0 18px 22px;
+      padding: 0 18px 28px;
     }
+
     .hero-content {
       width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      animation: fadeUp 0.5s ease;
+      animation: fadeUp 0.45s ease;
     }
+
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
     }
+
     .hero-action {
       display: inline-flex;
       align-items: center;
@@ -93,6 +108,7 @@
       box-shadow: var(--shadow);
       backdrop-filter: blur(4px);
     }
+
     .hero-action:hover,
     .hero-action.active {
       transform: translateY(-2px);
@@ -100,7 +116,12 @@
       border-color: transparent;
     }
 
-    .content-wrap { position: relative; z-index: 2; margin-top: -26px; }
+    .content-wrap {
+      position: relative;
+      z-index: 2;
+      margin-top: 18px;
+    }
+
     .section-shell {
       width: min(94vw, var(--max-width));
       margin: 0 auto 24px;
@@ -111,13 +132,16 @@
       backdrop-filter: blur(4px);
       overflow: hidden;
     }
+
     .section { padding: 24px 22px; }
+
     .section-title {
       font-size: clamp(24px, 2vw, 36px);
       font-weight: 900;
       text-transform: uppercase;
       margin-bottom: 8px;
     }
+
     .section-subtitle {
       color: var(--muted);
       line-height: 1.45;
@@ -141,21 +165,25 @@
       background: #101010;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
     }
+
     .album-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 18px 40px rgba(0,0,0,0.42);
     }
+
     .album-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
+
     .album-card::after {
       content: "";
       position: absolute;
       inset: 0;
       background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.00) 42%);
     }
+
     .album-info {
       position: absolute;
       left: 18px;
@@ -163,8 +191,18 @@
       bottom: 18px;
       z-index: 2;
     }
-    .album-title { font-size: 24px; font-weight: 900; margin-bottom: 10px; }
-    .album-meta { color: #efefef; font-size: 14px; line-height: 1.3; }
+
+    .album-title {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .album-meta {
+      color: #efefef;
+      font-size: 14px;
+      line-height: 1.3;
+    }
 
     .top-tools {
       display: flex;
@@ -174,6 +212,7 @@
       margin-bottom: 16px;
       flex-wrap: wrap;
     }
+
     .back-btn {
       display: inline-flex;
       align-items: center;
@@ -187,7 +226,11 @@
       font-weight: 700;
       transition: 0.2s ease;
     }
-    .back-btn:hover { background: var(--orange); border-color: transparent; }
+
+    .back-btn:hover {
+      background: var(--orange);
+      border-color: transparent;
+    }
 
     .empty-note {
       color: #fff;
@@ -211,7 +254,9 @@
       background: rgba(0,0,0,0.82);
       padding: 18px;
     }
+
     .modal.active { display: flex; }
+
     .modal-box {
       position: relative;
       width: min(96vw, 1250px);
@@ -223,6 +268,7 @@
       box-shadow: 0 20px 60px rgba(0,0,0,0.5);
       animation: popFast 0.18s ease;
     }
+
     .modal-top {
       display: flex;
       align-items: center;
@@ -233,8 +279,20 @@
       background: rgba(255,255,255,0.035);
       flex-wrap: wrap;
     }
-    .modal-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .modal-title { font-weight: 900; font-size: 20px; text-transform: uppercase; }
+
+    .modal-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .modal-title {
+      font-weight: 900;
+      font-size: 20px;
+      text-transform: uppercase;
+    }
+
     .mini-btn {
       display: inline-flex;
       align-items: center;
@@ -248,10 +306,13 @@
       font-weight: 700;
       transition: 0.2s ease;
     }
-    .mini-btn:hover, .mini-btn.active {
+
+    .mini-btn:hover,
+    .mini-btn.active {
       background: var(--orange);
       border-color: transparent;
     }
+
     .close-btn {
       border: 0;
       background: rgba(0,0,0,0.54);
@@ -272,6 +333,7 @@
       background: #060606;
       overflow: hidden;
     }
+
     .viewer-media-wrap {
       position: relative;
       z-index: 2;
@@ -282,6 +344,7 @@
       min-height: 65vh;
       padding: 10px;
     }
+
     .viewer-media-wrap img {
       max-width: 100%;
       max-height: 68vh;
@@ -289,6 +352,7 @@
       display: block;
       cursor: zoom-in;
     }
+
     .viewer-media-wrap.zoomed {
       position: fixed;
       inset: 0;
@@ -297,11 +361,13 @@
       padding: 24px;
       min-height: 100vh;
     }
+
     .viewer-media-wrap.zoomed img {
       max-width: 96vw;
       max-height: 92vh;
       cursor: zoom-out;
     }
+
     .zoom-close {
       position: fixed;
       top: 18px;
@@ -317,6 +383,7 @@
       cursor: pointer;
       display: none;
     }
+
     .zoom-close.active { display: block; }
 
     .viewer-nav {
@@ -336,6 +403,7 @@
       align-items: center;
       justify-content: center;
     }
+
     .viewer-prev { left: 16px; }
     .viewer-next { right: 16px; }
 
@@ -347,6 +415,7 @@
       background: rgba(255,255,255,0.03);
       border-top: 1px solid rgba(255,255,255,0.08);
     }
+
     .thumb {
       flex: 0 0 auto;
       width: 96px;
@@ -357,13 +426,15 @@
       cursor: pointer;
       background: #111;
     }
+
     .thumb.active { border-color: var(--orange); }
     .thumb img { width: 100%; height: 100%; object-fit: cover; }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
+      from { opacity: 0; transform: translateY(18px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
     @keyframes popFast {
       from { opacity: 0; transform: scale(0.97); }
       to { opacity: 1; transform: scale(1); }
@@ -372,12 +443,13 @@
     @media (max-width: 1050px) {
       .album-grid, .subalbum-grid { grid-template-columns: 1fr 1fr; }
     }
+
     @media (max-width: 760px) {
-      .hero { min-height: 34vh; }
-      .hero-inner { min-height: 34vh; padding: 0 14px 18px; }
+      .hero { min-height: 280px; height: 280px; }
+      .hero-inner { height: 280px; padding: 0 14px 18px; }
       .hero-actions { flex-direction: column; width: 100%; align-items: center; }
       .hero-action { width: min(88vw, 360px); }
-      .content-wrap { margin-top: -18px; }
+      .content-wrap { margin-top: 14px; }
       .album-grid, .subalbum-grid { grid-template-columns: 1fr; }
       .section { padding: 20px 14px; }
       .viewer { min-height: 48vh; }
@@ -481,7 +553,6 @@
     let currentIndex = 0;
     let currentAlbumPool = [];
     let currentAlbumIndex = 0;
-    let currentAlbumName = "";
     let zoomed = false;
 
     function getAlbumItems(album) {
@@ -612,7 +683,6 @@
       currentAlbumIndex = poolIndex;
       currentItems = items;
       currentIndex = 0;
-      currentAlbumName = title;
       zoomed = false;
 
       modalTitle.textContent = title;
@@ -651,7 +721,7 @@
       const file = currentItems[currentIndex];
       if (!file) return;
 
-      viewerMedia.innerHTML = `<img src="${file}" alt="${currentAlbumName} image ${currentIndex + 1}" id="activePhoto">`;
+      viewerMedia.innerHTML = `<img src="${file}" alt="Album image ${currentIndex + 1}" id="activePhoto">`;
 
       thumbStrip.innerHTML = currentItems.map((item, index) => `
         <div class="thumb ${index === currentIndex ? "active" : ""}" data-thumb-index="${index}">
