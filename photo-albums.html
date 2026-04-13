@@ -1,617 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Photo Albums - Mud & Motion Photography</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Albums - Mud & Motion</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --orange:#ff6a00;
-  --text:#ffffff;
-  --muted:#dddddd;
-  --panel:rgba(6,6,6,.56);
-  --panel-border:rgba(255,255,255,.12);
-  --shadow:0 15px 40px rgba(0,0,0,.35);
-  --radius:18px;
-  --max-width:1300px
-}
-html{scroll-behavior:smooth}
-body{font-family:Arial,sans-serif;background:#000;color:var(--text);overflow-x:hidden}
-a{color:inherit;text-decoration:none}
-button{font-family:inherit}
-img{display:block;max-width:100%}
-
-.hero{
-  position:relative;
-  min-height:430px;
-  height:430px;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  text-align:center;
-  overflow:hidden;
-  background:#000;
-  isolation:isolate
-}
-.hero-bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center center;
-  z-index:-3;
-  filter:brightness(.82) contrast(1.02)
-}
-.hero-overlay{
-  position:absolute;
-  inset:0;
-  z-index:-2;
-  pointer-events:none;
-  background:linear-gradient(to bottom,rgba(0,0,0,.08) 0%,rgba(0,0,0,.08) 34%,rgba(0,0,0,.22) 66%,rgba(0,0,0,.56) 100%)
-}
-.hero-inner{
-  width:min(94vw,1300px);
-  height:430px;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  padding:0 18px 28px
-}
-.hero-content{
-  width:100%;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:10px;
-  animation:fadeUp .45s ease
-}
-.hero-actions{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:10px
-}
-.hero-action,.mini-btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px 18px;
-  border-radius:999px;
-  background:rgba(0,0,0,.54);
-  border:1px solid rgba(255,255,255,.20);
-  color:#fff;
-  font-weight:700;
-  transition:.22s ease;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(4px);
-  cursor:pointer
-}
-.hero-action:hover,.hero-action.active,.mini-btn:hover,.mini-btn.active{
-  transform:translateY(-2px);
-  background:var(--orange);
-  border-color:transparent
-}
-
-.content-wrap{position:relative;z-index:2;margin-top:18px}
-.section-shell{
-  width:min(94vw,var(--max-width));
-  margin:0 auto 24px;
-  background:var(--panel);
-  border:1px solid var(--panel-border);
-  border-radius:24px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(4px);
-  overflow:hidden
-}
-.section{padding:24px 22px}
-.section-title{font-size:clamp(24px,2vw,36px);font-weight:900;text-transform:uppercase;margin-bottom:8px}
-.section-subtitle{color:var(--muted);line-height:1.45;margin-bottom:20px}
-
-.album-grid.page-grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:18px
-}
-.album-card{
-  position:relative;
-  border-radius:var(--radius);
-  overflow:hidden;
-  min-height:180px;
-  cursor:pointer;
-  border:1px solid rgba(255,255,255,.08);
-  box-shadow:var(--shadow);
-  background:#101010;
-  transition:transform .25s ease,box-shadow .25s ease
-}
-.album-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.42)}
-.album-card img{width:100%;height:100%;object-fit:cover}
-.album-card::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,0) 42%)
-}
-.album-info{position:absolute;left:18px;right:18px;bottom:18px;z-index:2}
-.album-title{font-size:18px;font-weight:900;margin-bottom:8px}
-.album-meta{color:#efefef;font-size:14px}
-.empty-note{
-  color:#fff;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.08);
-  padding:16px;
-  border-radius:16px;
-  font-weight:700;
-  display:inline-block;
-  min-width:340px;
-  max-width:100%
-}
-
-.modal{
-  position:fixed;
-  inset:0;
-  z-index:999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.82);
-  padding:18px
-}
-.modal.active{display:flex}
-.modal-box{
-  position:relative;
-  width:min(96vw,1250px);
-  max-height:94vh;
-  background:rgba(12,12,12,.96);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:20px;
-  overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,.5);
-  animation:popFast .18s ease
-}
-.modal-top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding:12px 14px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.035);
-  flex-wrap:wrap
-}
-.modal-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.modal-title{font-weight:900;font-size:20px;text-transform:uppercase}
-.close-btn{
-  border:0;
-  background:rgba(0,0,0,.54);
-  color:#fff;
-  width:42px;
-  height:42px;
-  border-radius:999px;
-  font-size:22px;
-  cursor:pointer
-}
-.viewer{
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  min-height:65vh;
-  background:#060606;
-  overflow:hidden
-}
-.viewer-media-wrap{
-  position:relative;
-  z-index:2;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  width:100%;
-  min-height:65vh;
-  padding:10px
-}
-.viewer-media-wrap img{
-  max-width:100%;
-  max-height:68vh;
-  object-fit:contain;
-  display:block;
-  cursor:zoom-in
-}
-.viewer-media-wrap.zoomed{
-  position:fixed;
-  inset:0;
-  z-index:1002;
-  background:rgba(0,0,0,.96);
-  padding:24px;
-  min-height:100vh
-}
-.viewer-media-wrap.zoomed img{
-  max-width:96vw;
-  max-height:92vh;
-  cursor:zoom-out
-}
-.zoom-close{
-  position:fixed;
-  top:18px;
-  right:18px;
-  z-index:1004;
-  width:50px;
-  height:50px;
-  border:0;
-  border-radius:999px;
-  background:rgba(255,255,255,.14);
-  color:#fff;
-  font-size:28px;
-  cursor:pointer;
-  display:none
-}
-.zoom-close.active{display:block}
-.viewer-nav{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  z-index:1005;
-  width:54px;
-  height:54px;
-  border-radius:999px;
-  border:0;
-  cursor:pointer;
-  background:rgba(0,0,0,.58);
-  color:#fff;
-  font-size:28px;
-  display:flex;
-  align-items:center;
-  justify-content:center
-}
-.viewer-prev{left:16px}
-.viewer-next{right:16px}
-.thumb-strip{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:14px 16px 16px;
-  background:rgba(255,255,255,.03);
-  border-top:1px solid rgba(255,255,255,.08)
-}
-.thumb{
-  flex:0 0 auto;
-  width:96px;
-  height:72px;
-  border-radius:12px;
-  overflow:hidden;
-  border:2px solid transparent;
-  cursor:pointer;
-  background:#111
-}
-.thumb.active{border-color:var(--orange)}
-.thumb img{width:100%;height:100%;object-fit:cover}
-
-.back-to-top{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  z-index:1100;
-  width:52px;
-  height:52px;
-  border:0;
-  border-radius:999px;
-  background:rgba(0,0,0,.62);
-  color:#fff;
-  font-size:24px;
-  cursor:pointer;
-  box-shadow:0 10px 24px rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.12);
-  backdrop-filter:blur(6px);
-  opacity:0;
-  visibility:hidden;
-  transform:translateY(10px);
-  transition:opacity .22s ease,transform .22s ease,visibility .22s ease,background .22s ease
-}
-.back-to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
-.back-to-top:hover{background:var(--orange)}
-
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(18px)}
-  to{opacity:1;transform:translateY(0)}
-}
-@keyframes popFast{
-  from{opacity:0;transform:scale(.97)}
-  to{opacity:1;transform:scale(1)}
-}
-
-@media (max-width:1050px){
-  .album-grid.page-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media (max-width:760px){
-  .hero{min-height:280px;height:280px}
-  .hero-inner{height:280px;padding:0 14px 18px}
-  .hero-actions{flex-direction:column;width:100%;align-items:center}
-  .hero-action,.mini-btn{width:min(88vw,360px)}
-  .content-wrap{margin-top:14px}
-  .album-grid.page-grid{grid-template-columns:1fr}
-  .section{padding:20px 14px}
-  .viewer{min-height:48vh}
-  .viewer-media-wrap{min-height:48vh}
-  .viewer-nav{width:46px;height:46px}
-  .modal-left{width:100%}
-  .zoom-close{top:12px;right:12px}
-  .back-to-top{width:48px;height:48px;right:14px;bottom:14px}
-  .empty-note{min-width:0;width:100%}
-}
+body{font-family:Arial;background:#000;color:#fff;margin:0}
+.hero{height:300px;background:url('photo-header.png') center/cover no-repeat;display:flex;align-items:flex-end;justify-content:center;padding-bottom:20px}
+.nav a{margin:5px;padding:10px 15px;border-radius:20px;background:#222;color:#fff;text-decoration:none}
+.section{padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px}
+.card{background:#111;border-radius:10px;overflow:hidden;cursor:pointer}
+.card img{width:100%;height:200px;object-fit:cover}
+.card h3{padding:10px;margin:0}
 </style>
 </head>
+
 <body>
 
-<section class="hero" id="top">
-  <img src="photo-header.png" alt="Photo Albums" class="hero-bg" />
-  <div class="hero-overlay"></div>
-
-  <div class="hero-inner">
-    <div class="hero-content">
-      <div class="hero-actions">
-        <a href="index.html" class="hero-action">Home</a>
-        <a href="photo-albums.html" class="hero-action active">Photo Albums</a>
-        <a href="video-albums.html" class="hero-action">Video Albums</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<div class="content-wrap">
-  <div class="section-shell">
-    <section class="section">
-      <div class="section-title">Photo Albums</div>
-      <div class="section-subtitle">All live photo albums show here. Weekend albums can open into Saturday and Sunday, and regular albums can still open directly.</div>
-      <div class="album-grid page-grid" id="pageAlbums"></div>
-    </section>
+<div class="hero">
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="photo-albums.html">Photo Albums</a>
+    <a href="video-albums.html">Video Albums</a>
   </div>
 </div>
 
-<button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
-
-<div class="modal" id="mediaModal" aria-hidden="true">
-  <div class="modal-box">
-    <div class="modal-top">
-      <div class="modal-left">
-        <button class="mini-btn" id="modalHomeBtn">Home</button>
-        <button class="mini-btn" id="fullPhotoAlbumsBtn">Full Photo Albums</button>
-        <button class="mini-btn" id="fullVideoAlbumsBtn">Full Video Albums</button>
-        <div class="modal-title" id="modalTitle">Album Viewer</div>
-      </div>
-
-      <div class="modal-left" id="albumSwitchRow"></div>
-
-      <button class="close-btn" id="closeModal" aria-label="Close">×</button>
-    </div>
-
-    <div class="viewer" id="viewer">
-      <button class="viewer-nav viewer-prev" id="prevBtn" aria-label="Previous">‹</button>
-      <div class="viewer-media-wrap" id="viewerMedia"></div>
-      <button class="viewer-nav viewer-next" id="nextBtn" aria-label="Next">›</button>
-      <button class="zoom-close" id="zoomCloseBtn" aria-label="Exit fullscreen">×</button>
-    </div>
-
-    <div class="thumb-strip" id="thumbStrip"></div>
-  </div>
+<div class="section">
+  <h2>Photo Albums</h2>
+  <div id="albums" class="grid"></div>
 </div>
 
 <script>
-const photoAlbums = [];
 
-const gridEl = document.getElementById("pageAlbums");
-const modal = document.getElementById("mediaModal");
-const modalTitle = document.getElementById("modalTitle");
-const viewerMedia = document.getElementById("viewerMedia");
-const thumbStrip = document.getElementById("thumbStrip");
-const closeModal = document.getElementById("closeModal");
-const prevBtn = document.getElementById("prevBtn");
-const nextBtn = document.getElementById("nextBtn");
-const modalHomeBtn = document.getElementById("modalHomeBtn");
-const albumSwitchRow = document.getElementById("albumSwitchRow");
-const fullPhotoAlbumsBtn = document.getElementById("fullPhotoAlbumsBtn");
-const fullVideoAlbumsBtn = document.getElementById("fullVideoAlbumsBtn");
-const backToTop = document.getElementById("backToTop");
-const zoomCloseBtn = document.getElementById("zoomCloseBtn");
+async function loadAlbums(){
+  try{
+    const res = await fetch('media/photos/index.json');
+    const albums = await res.json();
 
-let currentAlbum = [];
-let currentIndex = 0;
-let currentAlbumIndex = 0;
-let zoomed = false;
+    const container = document.getElementById("albums");
+    container.innerHTML = "";
 
-function getAlbumItems(album){
-  if (!album) return [];
-  if (album.type === "weekend") {
-    return [
-      ...(album.days?.saturday?.items || []),
-      ...(album.days?.sunday?.items || [])
-    ];
+    albums.forEach(album=>{
+      if(!album.published || !album.items || album.items.length===0) return;
+
+      const div = document.createElement("div");
+      div.className = "card";
+
+      div.innerHTML = `
+        <img src="${album.cover}">
+        <h3>${album.title}</h3>
+      `;
+
+      div.onclick = ()=>{
+        window.open(album.items[0], "_blank");
+      };
+
+      container.appendChild(div);
+    });
+
+  }catch(err){
+    document.getElementById("albums").innerHTML = "<p>No albums found.</p>";
   }
-  return Array.isArray(album.items) ? album.items : [];
 }
 
-function isAlbumLive(album){
-  return Boolean(album && album.published && getAlbumItems(album).length > 0);
-}
+loadAlbums();
 
-function getAlbumCover(album){
-  return (
-    album.cover ||
-    album.days?.saturday?.cover ||
-    album.days?.sunday?.cover ||
-    album.days?.saturday?.items?.[0] ||
-    album.days?.sunday?.items?.[0] ||
-    album.items?.[0] ||
-    "photo-header.png"
-  );
-}
-
-function getLivePhotoAlbums(){
-  return photoAlbums
-    .filter(isAlbumLive)
-    .sort((a,b)=>new Date(b.date) - new Date(a.date));
-}
-
-function createPageCards() {
-  const source = getLivePhotoAlbums();
-
-  if (!source.length) {
-    gridEl.innerHTML = '<div class="empty-note">No live photo albums yet.</div>';
-    return;
-  }
-
-  gridEl.innerHTML = source.map((album, index) => `
-    <div class="album-card" data-album="${index}">
-      <img src="${getAlbumCover(album)}" alt="${album.title}">
-      <div class="album-info">
-        <div class="album-title">${album.title}</div>
-        <div class="album-meta">${getAlbumItems(album).length} photos</div>
-      </div>
-    </div>
-  `).join("");
-}
-
-function renderAlbumSwitches() {
-  const source = getLivePhotoAlbums();
-  albumSwitchRow.innerHTML = source.map((album, index) => `
-    <button class="mini-btn ${currentAlbumIndex === index ? 'active' : ''}" data-switch-index="${index}">
-      ${album.title}
-    </button>
-  `).join("");
-
-  albumSwitchRow.querySelectorAll("[data-switch-index]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      openAlbum(Number(btn.dataset.switchIndex));
-    });
-  });
-}
-
-function wireThumbs() {
-  document.querySelectorAll(".thumb").forEach(thumb => {
-    thumb.addEventListener("click", () => {
-      currentIndex = Number(thumb.dataset.index);
-      renderViewer();
-    });
-  });
-}
-
-function setZoomState(state) {
-  zoomed = state;
-  const activePhoto = document.getElementById("activePhoto");
-  viewerMedia.classList.toggle("zoomed", state);
-  zoomCloseBtn.classList.toggle("active", state);
-  thumbStrip.style.display = state ? "none" : "flex";
-  if (activePhoto) activePhoto.style.cursor = state ? "zoom-out" : "zoom-in";
-}
-
-function wireImageZoom() {
-  const activePhoto = document.getElementById("activePhoto");
-  if (!activePhoto) return;
-  activePhoto.addEventListener("click", () => setZoomState(true));
-  activePhoto.addEventListener("dblclick", () => setZoomState(false));
-}
-
-function openAlbum(albumIndex) {
-  const source = getLivePhotoAlbums();
-  const selected = source[albumIndex];
-  if (!selected) return;
-
-  currentAlbumIndex = albumIndex;
-  currentAlbum = getAlbumItems(selected);
-  currentIndex = 0;
-  zoomed = false;
-  modalTitle.textContent = selected.title;
-  modal.classList.add("active");
-  document.body.style.overflow = "hidden";
-  renderAlbumSwitches();
-  renderViewer();
-}
-
-function renderViewer() {
-  const file = currentAlbum[currentIndex];
-  if (!file) return;
-
-  viewerMedia.innerHTML = `<img src="${file}" alt="Album image ${currentIndex + 1}" id="activePhoto">`;
-
-  thumbStrip.innerHTML = currentAlbum.map((item, index) => {
-    const activeClass = index === currentIndex ? "thumb active" : "thumb";
-    return `<div class="${activeClass}" data-index="${index}"><img src="${item}" alt="Thumbnail ${index + 1}"></div>`;
-  }).join("");
-
-  wireThumbs();
-  wireImageZoom();
-  setZoomState(zoomed);
-}
-
-function showPrev() {
-  if (!currentAlbum.length) return;
-  currentIndex = (currentIndex - 1 + currentAlbum.length) % currentAlbum.length;
-  renderViewer();
-}
-
-function showNext() {
-  if (!currentAlbum.length) return;
-  currentIndex = (currentIndex + 1) % currentAlbum.length;
-  renderViewer();
-}
-
-function closeViewer() {
-  modal.classList.remove("active");
-  document.body.style.overflow = "";
-  viewerMedia.innerHTML = "";
-  thumbStrip.innerHTML = "";
-  setZoomState(false);
-}
-
-function wireAlbumClicks() {
-  document.querySelectorAll("[data-album]").forEach(card => {
-    card.addEventListener("click", () => {
-      openAlbum(Number(card.dataset.album));
-    });
-  });
-}
-
-prevBtn.addEventListener("click", showPrev);
-nextBtn.addEventListener("click", showNext);
-closeModal.addEventListener("click", closeViewer);
-zoomCloseBtn.addEventListener("click", () => setZoomState(false));
-modalHomeBtn.addEventListener("click", () => { closeViewer(); window.location.href = "index.html"; });
-fullPhotoAlbumsBtn.addEventListener("click", () => { closeViewer(); window.location.href = "photo-albums.html"; });
-fullVideoAlbumsBtn.addEventListener("click", () => { closeViewer(); window.location.href = "video-albums.html"; });
-modal.addEventListener("click", (e) => { if (e.target === modal) closeViewer(); });
-
-document.addEventListener("keydown", (e) => {
-  if (!modal.classList.contains("active")) return;
-  if (e.key === "Escape") { if (zoomed) setZoomState(false); else closeViewer(); }
-  if (e.key === "ArrowLeft") showPrev();
-  if (e.key === "ArrowRight") showNext();
-});
-
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 250) backToTop.classList.add("show");
-  else backToTop.classList.remove("show");
-});
-
-backToTop.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-createPageCards();
-wireAlbumClicks();
-</script>
-
-<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-<script>
-if (window.netlifyIdentity) {
-  window.netlifyIdentity.on("init", user => {
-    if (!user) {
-      window.netlifyIdentity.on("login", () => {
-        document.location.href = "/admin/";
-      });
-    }
-  });
-}
 </script>
 
 </body>
