@@ -26,9 +26,9 @@
 
     .hero {
       position: relative;
-      min-height: 72vh;
+      min-height: 56vh;
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       justify-content: center;
       text-align: center;
       overflow: hidden;
@@ -36,45 +36,43 @@
       isolation: isolate;
     }
     .hero-bg {
-      position: fixed;
+      position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
       object-position: center center;
-      z-index: -4;
-      transform: scale(1.03);
-      filter: brightness(0.62) contrast(1.02);
+      z-index: -3;
+      filter: brightness(0.72) contrast(1.02);
     }
     .hero-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: -3;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 50% 22%, rgba(255,145,40,0.05) 0%, rgba(255,145,40,0.01) 16%, rgba(0,0,0,0.00) 32%),
-        linear-gradient(to bottom,
-          rgba(0,0,0,0.34) 0%,
-          rgba(0,0,0,0.30) 14%,
-          rgba(0,0,0,0.32) 28%,
-          rgba(0,0,0,0.42) 50%,
-          rgba(0,0,0,0.56) 74%,
-          rgba(0,0,0,0.74) 100%);
-    }
-    .hero-vignette {
-      position: fixed;
+      position: absolute;
       inset: 0;
       z-index: -2;
       pointer-events: none;
-      background: radial-gradient(circle at center, rgba(0,0,0,0) 44%, rgba(0,0,0,0.20) 70%, rgba(0,0,0,0.38) 100%);
+      background:
+        radial-gradient(circle at 50% 24%, rgba(255,145,40,0.04) 0%, rgba(255,145,40,0.01) 18%, rgba(0,0,0,0.00) 34%),
+        linear-gradient(to bottom,
+          rgba(0,0,0,0.18) 0%,
+          rgba(0,0,0,0.14) 22%,
+          rgba(0,0,0,0.26) 50%,
+          rgba(0,0,0,0.52) 78%,
+          rgba(0,0,0,0.72) 100%);
+    }
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(0,0,0,0) 52%, rgba(0,0,0,0.14) 76%, rgba(0,0,0,0.28) 100%);
     }
     .hero-inner {
       width: min(94vw, 1300px);
-      min-height: 72vh;
+      min-height: 56vh;
       display: flex;
-      align-items: flex-start;
+      align-items: flex-end;
       justify-content: center;
-      padding: 0 18px 14px;
+      padding: 0 18px 30px;
     }
     .hero-content {
       position: relative;
@@ -83,25 +81,23 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      transform: translateY(-16px);
+      gap: 10px;
       animation: fadeUp 0.7s ease;
     }
     .hero-logo {
-      width: clamp(560px, 76vw, 1080px);
+      width: clamp(440px, 58vw, 760px);
       height: auto;
-      filter: drop-shadow(0 18px 34px rgba(0,0,0,0.46)) drop-shadow(0 0 24px rgba(0,0,0,0.20));
+      filter: drop-shadow(0 14px 28px rgba(0,0,0,0.42)) drop-shadow(0 0 20px rgba(0,0,0,0.16));
       opacity: 0.98;
       pointer-events: none;
-      margin-bottom: -8px;
+      margin-bottom: 0;
     }
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-top: -10px;
-      margin-bottom: 18px;
+      margin-top: 2px;
       max-width: 900px;
     }
     .hero-action {
@@ -125,7 +121,7 @@
       border-color: transparent;
     }
 
-    .content-wrap { position: relative; z-index: 2; margin-top: -84px; }
+    .content-wrap { position: relative; z-index: 2; margin-top: -42px; }
     .section-shell {
       width: min(94vw, var(--max-width));
       margin: 0 auto 24px;
@@ -221,6 +217,9 @@
       padding: 16px;
       border-radius: 16px;
       font-weight: 700;
+      display: inline-block;
+      min-width: 340px;
+      max-width: 100%;
     }
 
     .modal {
@@ -395,13 +394,12 @@
       .album-grid, .subalbum-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 760px) {
-      .hero-bg { object-position: center center; }
-      .hero-inner { padding: 10px 14px 18px; }
-      .hero-content { transform: translateY(8px); }
-      .hero-logo { width: min(96vw, 760px); }
+      .hero { min-height: 46vh; }
+      .hero-inner { min-height: 46vh; padding: 0 14px 24px; }
+      .hero-logo { width: min(88vw, 520px); }
       .hero-actions { flex-direction: column; width: 100%; align-items: center; }
       .hero-action { width: min(88vw, 360px); }
-      .content-wrap { margin-top: -64px; }
+      .content-wrap { margin-top: -28px; }
       .album-grid, .subalbum-grid { grid-template-columns: 1fr; }
       .section { padding: 20px 14px; }
       .viewer { min-height: 48vh; }
@@ -409,6 +407,7 @@
       .viewer-nav { width: 46px; height: 46px; }
       .modal-left { width: 100%; }
       .zoom-close { top: 12px; right: 12px; }
+      .empty-note { min-width: 0; width: 100%; }
     }
   </style>
 </head>
@@ -481,8 +480,6 @@
   </div>
 
   <script>
-    // Leave this empty until real albums are live.
-    // When you are ready, your real albums will be added here or swapped in by your CMS flow.
     const photoAlbumData = [];
 
     const albumGrid = document.getElementById("albumGrid");
