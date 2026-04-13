@@ -26,7 +26,7 @@
 
     .hero {
       position: relative;
-      min-height: 56vh;
+      min-height: 44vh;
       display: flex;
       align-items: flex-end;
       justify-content: center;
@@ -43,7 +43,7 @@
       object-fit: cover;
       object-position: center center;
       z-index: -3;
-      filter: brightness(0.72) contrast(1.02);
+      filter: brightness(0.78) contrast(1.02);
     }
     .hero-overlay {
       position: absolute;
@@ -51,54 +51,33 @@
       z-index: -2;
       pointer-events: none;
       background:
-        radial-gradient(circle at 50% 24%, rgba(255,145,40,0.04) 0%, rgba(255,145,40,0.01) 18%, rgba(0,0,0,0.00) 34%),
         linear-gradient(to bottom,
-          rgba(0,0,0,0.18) 0%,
-          rgba(0,0,0,0.14) 22%,
-          rgba(0,0,0,0.26) 50%,
-          rgba(0,0,0,0.52) 78%,
-          rgba(0,0,0,0.72) 100%);
-    }
-    .hero-vignette {
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      pointer-events: none;
-      background: radial-gradient(circle at center, rgba(0,0,0,0) 52%, rgba(0,0,0,0.14) 76%, rgba(0,0,0,0.28) 100%);
+          rgba(0,0,0,0.10) 0%,
+          rgba(0,0,0,0.10) 30%,
+          rgba(0,0,0,0.28) 64%,
+          rgba(0,0,0,0.60) 100%);
     }
     .hero-inner {
       width: min(94vw, 1300px);
-      min-height: 56vh;
+      min-height: 44vh;
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding: 0 18px 30px;
+      padding: 0 18px 22px;
     }
     .hero-content {
-      position: relative;
       width: 100%;
-      max-width: 1180px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      animation: fadeUp 0.7s ease;
-    }
-    .hero-logo {
-      width: clamp(440px, 58vw, 760px);
-      height: auto;
-      filter: drop-shadow(0 14px 28px rgba(0,0,0,0.42)) drop-shadow(0 0 20px rgba(0,0,0,0.16));
-      opacity: 0.98;
-      pointer-events: none;
-      margin-bottom: 0;
+      animation: fadeUp 0.5s ease;
     }
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 10px;
-      margin-top: 2px;
-      max-width: 900px;
     }
     .hero-action {
       display: inline-flex;
@@ -121,7 +100,7 @@
       border-color: transparent;
     }
 
-    .content-wrap { position: relative; z-index: 2; margin-top: -42px; }
+    .content-wrap { position: relative; z-index: 2; margin-top: -26px; }
     .section-shell {
       width: min(94vw, var(--max-width));
       margin: 0 auto 24px;
@@ -394,12 +373,11 @@
       .album-grid, .subalbum-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 760px) {
-      .hero { min-height: 46vh; }
-      .hero-inner { min-height: 46vh; padding: 0 14px 24px; }
-      .hero-logo { width: min(88vw, 520px); }
+      .hero { min-height: 34vh; }
+      .hero-inner { min-height: 34vh; padding: 0 14px 18px; }
       .hero-actions { flex-direction: column; width: 100%; align-items: center; }
       .hero-action { width: min(88vw, 360px); }
-      .content-wrap { margin-top: -28px; }
+      .content-wrap { margin-top: -18px; }
       .album-grid, .subalbum-grid { grid-template-columns: 1fr; }
       .section { padding: 20px 14px; }
       .viewer { min-height: 48vh; }
@@ -415,12 +393,9 @@
   <section class="hero">
     <img src="photo-header.png" alt="Photo Albums" class="hero-bg" />
     <div class="hero-overlay"></div>
-    <div class="hero-vignette"></div>
 
     <div class="hero-inner">
       <div class="hero-content">
-        <img src="logo.png" alt="Mud & Motion Photography" class="hero-logo" />
-
         <div class="hero-actions">
           <a href="index.html" class="hero-action">Home</a>
           <a href="photo-albums.html" class="hero-action active">Photo Albums</a>
@@ -586,7 +561,6 @@
       subalbumSubtitle.textContent = "Choose a day to open that part of the weekend.";
 
       const dayCards = [];
-
       const saturdayItems = album.days?.saturday?.items || [];
       const sundayItems = album.days?.sunday?.items || [];
 
