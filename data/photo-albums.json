@@ -1,24 +1,3 @@
 {
-  "albums": [
-    {
-      "published": true,
-      "weekend_album": false,
-      "title": "Dry Branch",
-      "date": "2026-04-14",
-      "cover": "/media/uploads/img_4689.jpg",
-      "items": [
-        "/media/uploads/img_4691.jpg"
-      ]
-    },
-    {
-      "published": true,
-      "weekend_album": false,
-      "title": "ddr",
-      "date": "2026-04-14",
-      "cover": "/media/uploads/img_4689.jpg",
-      "items": [
-        "/media/uploads/img_4691.jpg"
-      ]
-    }
-  ]
+  "albums": []
 }
