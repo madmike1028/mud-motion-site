@@ -225,7 +225,7 @@
 
         <div class="schedule-shell">
           <div class="schedule-image-wrap">
-            <img src="schedule.jpg" alt="2026 Race Schedule" class="schedule-image" />
+            <img src="schedule.jpg" alt="2026 Race Schedule" class="schedule-image" onerror="this.onerror=null;this.src='media/schedule.jpg';" />
           </div>
 
           <div class="contact-strip">
@@ -326,6 +326,7 @@
 
     function getAlbumItems(album) {
       if (!album) return [];
+      if (Array.isArray(album.items) && album.items.length) return album.items;
       return [ ...(album.days?.saturday?.items || []), ...(album.days?.sunday?.items || []) ];
     }
 
@@ -333,6 +334,7 @@
 
     function getAlbumCover(album) {
       if (album.cover) return album.cover;
+      if (Array.isArray(album.items) && album.items.length) return album.items[0];
       return album.days?.saturday?.cover || album.days?.sunday?.cover || album.days?.saturday?.items?.[0] || album.days?.sunday?.items?.[0] || "";
     }
 
