@@ -1,1 +1,11 @@
-
+{
+  "albums": [
+    {
+      "published": true,
+      "weekend_album": false,
+      "title": "Dry Branch",
+      "date": "2026-04-14",
+      "cover": "/media/uploads/img_4689.jpg"
+    }
+  ]
+}
