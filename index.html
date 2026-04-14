@@ -2,76 +2,173 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mud & Motion Photography</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{margin:0;font-family:Arial;background:#000;color:#fff}
-.header{height:400px;background:url('hero.jpg') center/cover no-repeat;display:flex;align-items:flex-end;justify-content:center}
-.nav{display:flex;gap:10px;margin-bottom:20px}
-.btn{padding:10px 18px;border-radius:999px;background:#111;border:1px solid #444;color:#fff;text-decoration:none}
-.section{padding:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px}
-.card{background:#111;padding:10px;border-radius:10px}
-.card img{width:100%;border-radius:10px}
-.footer{padding:20px;text-align:center}
+body {
+  margin: 0;
+  font-family: Arial;
+  color: white;
+  background: black;
+}
+
+/* BACKGROUND */
+.bg {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: url('./background.png') center/cover no-repeat;
+  z-index: -2;
+}
+
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.75);
+  z-index: -1;
+}
+
+/* NAV */
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: 2px solid white;
+  color: white;
+  text-decoration: none;
+}
+
+.btn.active {
+  background: orange;
+  color: black;
+  border: none;
+}
+
+/* SECTION */
+.section {
+  padding: 40px;
+}
+
+/* GRID */
+.grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 300px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.info {
+  padding: 10px;
+}
+
+.title {
+  color: orange;
+  font-weight: bold;
+}
+
+/* SCHEDULE */
+.schedule {
+  text-align: center;
+}
+
+.schedule img {
+  width: 90%;
+  max-width: 900px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="header">
-  <div class="nav">
-    <a href="index.html" class="btn">Home</a>
-    <a href="photo-albums.html" class="btn">Photo Albums</a>
-    <a href="video-albums.html" class="btn">Video Albums</a>
-  </div>
+<div class="bg"></div>
+<div class="overlay"></div>
+
+<!-- NAV -->
+<div class="nav">
+  <a class="btn active" href="index.html">Home</a>
+  <a class="btn" href="photo-albums.html">Photo Albums</a>
+  <a class="btn" href="video-albums.html">Video Albums</a>
+  <a class="btn" href="#schedule">Schedule</a>
 </div>
 
+<!-- PHOTO -->
 <div class="section">
-<h2>Latest Photo Albums</h2>
-<div id="photoGrid" class="grid"></div>
+  <h2>Latest Photo Albums</h2>
+  <div class="grid" id="photoGrid"></div>
 </div>
 
+<!-- VIDEO -->
 <div class="section">
-<h2>Latest Video Albums</h2>
-<div id="videoGrid" class="grid"></div>
+  <h2>Latest Video Albums</h2>
+  <div class="grid" id="videoGrid"></div>
 </div>
 
-<div class="section">
-<img src="schedule.jpg" style="width:100%">
-</div>
-
-<div class="footer">
-Mud & Motion Photography
+<!-- SCHEDULE -->
+<div class="section schedule" id="schedule">
+  <img src="./schedule.jpg">
 </div>
 
 <script>
-async function loadPhotos(){
-  let res=await fetch('data/photo-albums.json');
-  let data=await res.json();
-  let albums=(data.albums||[]).filter(a=>a.published).slice(0,3);
-  document.getElementById('photoGrid').innerHTML=albums.map(a=>`
-    <div class="card">
-      <img src="${a.cover||''}">
-      <div>${a.title}</div>
-    </div>
-  `).join('');
+async function loadAlbums() {
+
+  const p = await fetch('./data/photo-albums.json');
+  const pd = await p.json();
+  const grid = document.getElementById('photoGrid');
+
+  pd.albums.sort((a,b)=> new Date(b.date)-new Date(a.date));
+
+  pd.albums.slice(0,4).forEach(a=>{
+    grid.innerHTML += `
+      <div class="card">
+        <img src="${a.cover_image}">
+        <div class="info">
+          <div class="title">${a.title}</div>
+          <div>${a.images.length} photos</div>
+        </div>
+      </div>`;
+  });
+
+  const v = await fetch('./data/video-albums.json');
+  const vd = await v.json();
+  const vgrid = document.getElementById('videoGrid');
+
+  vd.albums.sort((a,b)=> new Date(b.date)-new Date(a.date));
+
+  vd.albums.slice(0,4).forEach(a=>{
+    vgrid.innerHTML += `
+      <div class="card">
+        <img src="${a.cover_image}">
+        <div class="info">
+          <div class="title">${a.title}</div>
+          <div>${a.videos.length} videos</div>
+        </div>
+      </div>`;
+  });
+
 }
 
-async function loadVideos(){
-  let res=await fetch('data/video-albums.json');
-  let data=await res.json();
-  let albums=(data.albums||[]).filter(a=>a.published).slice(0,3);
-  document.getElementById('videoGrid').innerHTML=albums.map(a=>`
-    <div class="card">
-      <img src="${a.cover||''}">
-      <div>${a.title}</div>
-    </div>
-  `).join('');
-}
-
-loadPhotos();
-loadVideos();
+loadAlbums();
 </script>
 
 </body>
-</html>
+</html> 
