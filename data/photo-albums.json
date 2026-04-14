@@ -5,7 +5,10 @@
       "weekend_album": false,
       "title": "Dry Branch",
       "date": "2026-04-14",
-      "cover": "/media/uploads/img_4689.jpg"
+      "cover": "/media/uploads/img_4689.jpg",
+      "items": [
+        "/media/uploads/img_4691.jpg"
+      ]
     }
   ]
 }
