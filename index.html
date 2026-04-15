@@ -116,7 +116,7 @@
     @keyframes popFast { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
     @keyframes dustBurst { 0% { opacity: 1; } 100% { opacity: 0; } }
 
-    @media (max-width: 1050px) { .album-grid { grid-template-columns: 1fr 1fr; } .schedule-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 1050px) { .album-grid { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 760px) {
       .hero-bg { object-position: 50% center; }
       .hero-inner { padding: 10px 14px 18px; }
@@ -290,7 +290,6 @@
 
     const photoAlbumsEl = document.getElementById("photoAlbums");
     const videoAlbumsEl = document.getElementById("videoAlbums");
-    const scheduleGrid = document.getElementById("scheduleGrid");
     const modal = document.getElementById("mediaModal");
     const modalTitle = document.getElementById("modalTitle");
     const viewerMedia = document.getElementById("viewerMedia");
@@ -333,20 +332,22 @@
     function getAlbumCount(album) { return getAlbumItems(album).length; }
 
     function getAlbumCover(album) {
+      if (!album) return "";
       if (album.cover) return album.cover;
+      if (album.cover_image) return album.cover_image;
       if (Array.isArray(album.items) && album.items.length) return album.items[0];
       return album.days?.saturday?.cover || album.days?.sunday?.cover || album.days?.saturday?.items?.[0] || album.days?.sunday?.items?.[0] || "";
     }
 
-    function isAlbumLive(album) { return Boolean(album && album.published && getAlbumCount(album) > 0); }
+    function isAlbumLive(album) { return Boolean(album && getAlbumCount(album) > 0); }
 
     function getLiveAlbums(source) {
-      return source.filter(isAlbumLive).sort((a, b) => new Date(b.date) - new Date(a.date));
+      return source.filter(isAlbumLive).sort((a, b) => new Date(b.date || "1970-01-01") - new Date(a.date || "1970-01-01"));
     }
 
     function createAlbumCards() {
-      const livePhotos = getLiveAlbums(photoAlbumData).slice(0, 3);
-      const liveVideos = getLiveAlbums(videoAlbumData).slice(0, 3);
+      const livePhotos = photoAlbumData.slice(0, 3);
+      const liveVideos = videoAlbumData.slice(0, 3);
 
       photoAlbumsEl.innerHTML = livePhotos.length ? livePhotos.map((album, index) => `
         <div class="album-card" data-type="photo" data-album="${index}">
@@ -356,7 +357,7 @@
             <div class="album-meta">${getAlbumCount(album)} photos<br>${album.location || ""}</div>
           </div>
         </div>
-      `).join("") : `<div class="section-subtitle" style="margin-bottom:0;">No live photo albums yet.</div>`;
+      `).join("") : `<div class="section-subtitle" style="margin-bottom:0;">No photo albums yet.</div>`;
 
       videoAlbumsEl.innerHTML = liveVideos.length ? liveVideos.map((album, index) => `
         <div class="album-card" data-type="video" data-album="${index}">
@@ -366,7 +367,15 @@
             <div class="album-meta">${getAlbumCount(album)} videos<br>${album.location || ""}</div>
           </div>
         </div>
-      `).join("") : `<div class="section-subtitle" style="margin-bottom:0;">No live video albums yet.</div>`;
+      `).join("") : `<div class="section-subtitle" style="margin-bottom:0;">No video albums yet.</div>`;
+
+      document.querySelectorAll("#photoAlbums [data-type][data-album]").forEach(card => {
+        card.addEventListener("click", () => openLiveAlbum("photo", Number(card.dataset.album)));
+      });
+
+      document.querySelectorAll("#videoAlbums [data-type][data-album]").forEach(card => {
+        card.addEventListener("click", () => openLiveAlbum("video", Number(card.dataset.album)));
+      });
     }
 
     function createScheduleCards() { return; }
@@ -500,44 +509,34 @@
 
         const normalizeAlbum = (album, mediaKey) => {
           const singleItems = normalizeMediaList(album.items, mediaKey);
+          const imageItems = normalizeMediaList(album.images, mediaKey);
+          const photoItems = normalizeMediaList(album.photos, mediaKey);
           const saturdayItems = normalizeMediaList(album.saturday_items, mediaKey);
           const sundayItems = normalizeMediaList(album.sunday_items, mediaKey);
-          const isWeekend = Boolean(album.weekend_album);
-          const merged = isWeekend ? [...saturdayItems, ...sundayItems] : singleItems;
+          const directItems = singleItems.length ? singleItems : (imageItems.length ? imageItems : photoItems);
 
           return {
             ...album,
+            published: album.published !== false,
             date: album.date || "",
-            published: Boolean(album.published),
-            cover: album.cover || saturdayItems[0] || sundayItems[0] || singleItems[0] || "",
+            cover: album.cover || album.cover_image || saturdayItems[0] || sundayItems[0] || directItems[0] || "",
+            items: directItems.length ? directItems : [...saturdayItems, ...sundayItems],
             days: {
               saturday: { cover: saturdayItems[0] || "", items: saturdayItems },
               sunday: { cover: sundayItems[0] || "", items: sundayItems }
-            },
-            items: merged
+            }
           };
         };
 
-        photoAlbumData = Array.isArray(photoJson.albums)
-          ? photoJson.albums.map(album => normalizeAlbum(album, "photo"))
-          : [];
-
-        videoAlbumData = Array.isArray(videoJson.albums)
-          ? videoJson.albums.map(album => normalizeAlbum(album, "video"))
-          : [];
+        photoAlbumData = Array.isArray(photoJson.albums) ? photoJson.albums.map(album => normalizeAlbum(album, "photo")) : [];
+        videoAlbumData = Array.isArray(videoJson.albums) ? videoJson.albums.map(album => normalizeAlbum(album, "video")) : [];
 
         createAlbumCards();
-
-        document.querySelectorAll("#photoAlbums [data-type][data-album]").forEach(card => {
-          card.addEventListener("click", () => openLiveAlbum("photo", Number(card.dataset.album)));
-        });
-        document.querySelectorAll("#videoAlbums [data-type][data-album]").forEach(card => {
-          card.addEventListener("click", () => openLiveAlbum("video", Number(card.dataset.album)));
-        });
+        createScheduleCards();
       } catch (err) {
         console.error("Error loading album data:", err);
-        photoAlbumsEl.innerHTML = `<div class="section-subtitle" style="margin-bottom:0;">No live photo albums yet.</div>`;
-        videoAlbumsEl.innerHTML = `<div class="section-subtitle" style="margin-bottom:0;">No live video albums yet.</div>`;
+        photoAlbumsEl.innerHTML = `<div class="section-subtitle" style="margin-bottom:0;">No photo albums yet.</div>`;
+        videoAlbumsEl.innerHTML = `<div class="section-subtitle" style="margin-bottom:0;">No video albums yet.</div>`;
       }
     }
 
