@@ -14,47 +14,70 @@ collections:
         file: "data/photo-albums.json"
         format: "json"
         fields:
-          - label: "Albums"
+          - label: "Photo Albums"
             name: "albums"
             widget: "list"
             summary: "{{fields.title}}"
             collapsed: false
             fields:
-              - { label: "Album Title", name: "title", widget: "string" }
-              - { label: "Slug", name: "slug", widget: "string", required: false, hint: "Example: dry-branch-gp" }
-              - { label: "Album Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
-              - { label: "Location", name: "location", widget: "string", required: false }
-              - { label: "Show Live", name: "published", widget: "boolean", default: true }
-              - { label: "Cover Image", name: "cover", widget: "image", required: false }
-              - { label: "Weekend Album", name: "weekend_album", widget: "boolean", default: false, required: false }
+              - label: "Album Title"
+                name: "title"
+                widget: "string"
+                hint: "Name it whatever you want. Example: Dry Branch GP - April 12 or Practice Day."
+
+              - label: "Album Date"
+                name: "date"
+                widget: "datetime"
+                format: "YYYY-MM-DD"
+                date_format: "YYYY-MM-DD"
+                time_format: false
+                hint: "Used to sort newest first on the homepage and album pages."
+
+              - label: "Published"
+                name: "published"
+                widget: "boolean"
+                default: true
+                hint: "Turn this on when the album is ready to show on the site."
+
+              - label: "Weekend Album"
+                name: "weekend_album"
+                widget: "boolean"
+                default: false
+                hint: "Turn this on if you want separate Saturday and Sunday sections."
+
+              - label: "Cover Image"
+                name: "cover"
+                widget: "image"
+                required: false
+                hint: "The preview image shown on the homepage and album page."
+
               - label: "Single Album Photos"
                 name: "items"
                 widget: "list"
                 required: false
-                collapsed: false
-                hint: "Use this for a normal one-folder album."
+                hint: "Use this when it is just one album with photos directly inside it."
                 field:
                   label: "Photo"
                   name: "photo"
                   widget: "image"
+
               - label: "Saturday Photos"
                 name: "saturday_items"
                 widget: "list"
                 required: false
-                collapsed: false
-                hint: "Use this only for weekend albums."
+                hint: "Only use this for a weekend album."
                 field:
-                  label: "Photo"
+                  label: "Saturday Photo"
                   name: "photo"
                   widget: "image"
+
               - label: "Sunday Photos"
                 name: "sunday_items"
                 widget: "list"
                 required: false
-                collapsed: false
-                hint: "Use this only for weekend albums."
+                hint: "Only use this for a weekend album."
                 field:
-                  label: "Photo"
+                  label: "Sunday Photo"
                   name: "photo"
                   widget: "image"
 
@@ -63,46 +86,69 @@ collections:
         file: "data/video-albums.json"
         format: "json"
         fields:
-          - label: "Albums"
+          - label: "Video Albums"
             name: "albums"
             widget: "list"
             summary: "{{fields.title}}"
             collapsed: false
             fields:
-              - { label: "Album Title", name: "title", widget: "string" }
-              - { label: "Slug", name: "slug", widget: "string", required: false, hint: "Example: dry-branch-gp" }
-              - { label: "Album Date", name: "date", widget: "datetime", format: "YYYY-MM-DD", date_format: "YYYY-MM-DD", time_format: false }
-              - { label: "Location", name: "location", widget: "string", required: false }
-              - { label: "Show Live", name: "published", widget: "boolean", default: true }
-              - { label: "Cover Image", name: "cover", widget: "image", required: false }
-              - { label: "Weekend Album", name: "weekend_album", widget: "boolean", default: false, required: false }
+              - label: "Album Title"
+                name: "title"
+                widget: "string"
+                hint: "Name it whatever you want. Example: Dry Branch GP - April 12 or Practice Day Videos."
+
+              - label: "Album Date"
+                name: "date"
+                widget: "datetime"
+                format: "YYYY-MM-DD"
+                date_format: "YYYY-MM-DD"
+                time_format: false
+                hint: "Used to sort newest first on the homepage and album pages."
+
+              - label: "Published"
+                name: "published"
+                widget: "boolean"
+                default: true
+                hint: "Turn this on when the album is ready to show on the site."
+
+              - label: "Weekend Album"
+                name: "weekend_album"
+                widget: "boolean"
+                default: false
+                hint: "Turn this on if you want separate Saturday and Sunday sections."
+
+              - label: "Cover Image"
+                name: "cover"
+                widget: "image"
+                required: false
+                hint: "The preview image shown on the homepage and album page."
+
               - label: "Single Album Videos"
                 name: "items"
                 widget: "list"
                 required: false
-                collapsed: false
-                hint: "Use this for a normal one-folder album."
+                hint: "Use this when it is just one album with videos directly inside it."
                 field:
                   label: "Video"
                   name: "video"
-                  widget: "string"
+                  widget: "file"
+
               - label: "Saturday Videos"
                 name: "saturday_items"
                 widget: "list"
                 required: false
-                collapsed: false
-                hint: "Use this only for weekend albums."
+                hint: "Only use this for a weekend album."
                 field:
-                  label: "Video"
+                  label: "Saturday Video"
                   name: "video"
-                  widget: "string"
+                  widget: "file"
+
               - label: "Sunday Videos"
                 name: "sunday_items"
                 widget: "list"
                 required: false
-                collapsed: false
-                hint: "Use this only for weekend albums."
+                hint: "Only use this for a weekend album."
                 field:
-                  label: "Video"
+                  label: "Sunday Video"
                   name: "video"
-                  widget: "string"
+                  widget: "file"
