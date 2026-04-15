@@ -1,3 +1,14 @@
 {
-  "albums": []
+  "albums": [
+    {
+      "published": true,
+      "weekend_album": false,
+      "title": "cat ",
+      "date": "2026-04-15",
+      "cover": "/media/uploads/img_4689.jpg",
+      "items": [
+        "/media/uploads/img_4691.jpg"
+      ]
+    }
+  ]
 }
