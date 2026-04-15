@@ -1,0 +1,15 @@
+Photos:
+media/photo-albums/Album Name/
+media/photo-albums/Weekend Name/Saturday/
+media/photo-albums/Weekend Name/Sunday/
+
+Videos:
+media/video-albums/Album Name/
+media/video-albums/Weekend Name/Saturday/
+media/video-albums/Weekend Name/Sunday/
+
+Rules:
+- folder name = album name
+- no renaming required
+- first file found = cover
+- upload folders to GitHub and the site reads them automatically
