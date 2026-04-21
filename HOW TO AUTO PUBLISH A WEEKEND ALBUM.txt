@@ -1,0 +1,68 @@
+HOW TO AUTO PUBLISH A WEEKEND ALBUM
+
+This is the easy version for race weekends.
+
+FIRST TIME ONLY
+
+1. Make one folder for the race weekend somewhere outside the website folder.
+   Example: Desktop\Dry Branch GP Weekend
+
+2. Inside that folder, make these 2 folders:
+   Saturday
+   Sunday
+
+3. Put Saturday photos into the Saturday folder.
+
+4. Open the website folder.
+   Example: Documents\GitHub\mud-motion-site
+
+5. Open the tools folder.
+
+6. Double-click:
+   publish-weekend-album.cmd
+
+7. Click the race weekend folder.
+   This is the top folder that has Saturday and Sunday inside it.
+
+8. Type the race weekend date like this:
+   2026-04-11
+
+9. Type the race weekend name exactly how it should show on the website.
+   Example: Dry Branch GP
+
+10. Wait for the success message.
+
+WHAT THE SCRIPT DOES
+
+- Makes the web-size photo copies.
+- Keeps Saturday and Sunday inside one weekend album.
+- Pushes the new photos to GitHub automatically.
+- The website then updates from GitHub and Netlify.
+- The date controls the order on the homepage.
+- The date stays hidden from the album title on the website.
+
+ON SUNDAY
+
+1. Go back to the SAME race weekend folder.
+
+2. Put Sunday photos into the Sunday folder.
+
+3. Double-click:
+   publish-weekend-album.cmd
+
+4. Click that SAME race weekend folder again.
+
+5. The script remembers the weekend settings.
+
+6. It skips the Saturday files that are already done.
+
+7. It only adds the new Sunday files.
+
+8. It pushes only the new update.
+
+VERY IMPORTANT
+
+- Do not make a second top folder for Sunday.
+- Keep using the same weekend folder.
+- Keep Saturday and Sunday inside that same top folder.
+- That is what stops duplicates and keeps one clean weekend album.

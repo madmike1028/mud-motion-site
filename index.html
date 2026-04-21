@@ -737,6 +737,31 @@ function prettifyName(name) {
     .trim();
 }
 
+function parseAlbumDate(name) {
+  const raw = decodeURIComponent(String(name || '')).trim();
+  const match = raw.match(/^(\d{4})[-_ ]?(\d{2})[-_ ]?(\d{2})(?:[\s_-]+)(.+)$/);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) return null;
+  if (month < 1 || month > 12 || day < 1 || day > 31) return null;
+
+  const stamp = Date.UTC(year, month - 1, day);
+  if (!Number.isFinite(stamp)) return null;
+
+  return {
+    stamp,
+    title: match[4]
+  };
+}
+
+function prettifyAlbumTitle(name) {
+  const parsed = parseAlbumDate(name);
+  return prettifyName(parsed ? parsed.title : name);
+}
+
 function isImageFile(item) {
   return item && item.type === 'file' && FILE_TYPES.image.test(item.name || '');
 }
@@ -809,7 +834,7 @@ async function buildAlbum(folder, type) {
     days.forEach(day => stampCandidates.push(day.stamp || 0));
 
     return {
-      title: prettifyName(folder.name),
+      title: prettifyAlbumTitle(folder.name),
       folderName: folder.name,
       type,
       isWeekend: true,
@@ -817,14 +842,16 @@ async function buildAlbum(folder, type) {
       coverKind,
       items: [],
       days,
-      stamp: Math.max(...stampCandidates, 0)
+      stamp: Math.max(...stampCandidates, 0),
+      sortStamp: parseAlbumDate(folder.name)?.stamp || Math.max(...stampCandidates, 0)
     };
   }
 
   if (!directMedia.length) return null;
   const cover = pickCover(files, type);
+  const mediaStamp = await getLastModified(cover.stampUrl || directMedia[0].download_url);
   return {
-    title: prettifyName(folder.name),
+    title: prettifyAlbumTitle(folder.name),
     folderName: folder.name,
     type,
     isWeekend: false,
@@ -832,7 +859,8 @@ async function buildAlbum(folder, type) {
     coverKind: cover.kind,
     items: directMedia.map(file => file.download_url),
     days: [],
-    stamp: await getLastModified(cover.stampUrl || directMedia[0].download_url)
+    stamp: mediaStamp,
+    sortStamp: parseAlbumDate(folder.name)?.stamp || mediaStamp
   };
 }
 
@@ -841,7 +869,7 @@ async function loadAlbums(type) {
   const rootContents = await getGitHubContents(root);
   const folders = (rootContents || []).filter(item => item.type === 'dir');
   const albums = (await Promise.all(folders.map(folder => buildAlbum(folder, type)))).filter(Boolean);
-  return albums.sort((a, b) => (b.stamp || 0) - (a.stamp || 0) || a.title.localeCompare(b.title));
+  return albums.sort((a, b) => (b.sortStamp || b.stamp || 0) - (a.sortStamp || a.stamp || 0) || a.title.localeCompare(b.title));
 }
 
 function renderCoverMarkup(album) {
