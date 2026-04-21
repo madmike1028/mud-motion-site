@@ -88,6 +88,12 @@ img{display:block;max-width:100%}
 .thumb{flex:0 0 auto;width:96px;height:72px;border-radius:12px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#111}
 .thumb.active{border-color:var(--orange)}
 .thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.viewer-media-wrap.grid-mode{display:block;align-self:stretch;padding:16px}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;width:100%;max-height:68vh;overflow-y:auto;padding-right:6px}
+.gallery-tile{position:relative;display:block;width:100%;min-height:110px;border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden;background:#111;cursor:pointer;transition:transform .18s ease,border-color .18s ease}
+.gallery-tile:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.22)}
+.gallery-tile img,.gallery-tile video{width:100%;height:100%;min-height:110px;object-fit:cover;display:block}
+.gallery-tile span{position:absolute;left:10px;bottom:10px;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,.74);color:#fff;font-size:12px;font-weight:700}
 .back-to-top{position:fixed;right:20px;bottom:20px;z-index:1100;width:52px;height:52px;border:0;border-radius:999px;background:rgba(0,0,0,.62);color:#fff;font-size:24px;cursor:pointer;box-shadow:0 10px 24px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .22s ease,transform .22s ease,visibility .22s ease,background .22s ease}
 .back-to-top.show{opacity:1;visibility:visible;transform:translateY(0)}
 .back-to-top:hover{background:var(--orange)}
@@ -437,6 +443,8 @@ function renderViewer() {
   const isVideo = currentType === 'video';
   if (!file) return;
 
+  currentViewerMode = 'single';
+  viewerMedia.classList.remove('grid-mode');
   prevBtn.style.display = currentAlbum.length > 1 ? 'flex' : 'none';
   nextBtn.style.display = currentAlbum.length > 1 ? 'flex' : 'none';
   thumbStrip.style.display = 'flex';
@@ -461,8 +469,38 @@ function renderViewer() {
   setZoomState(zoomed);
 }
 
+function renderGridViewer() {
+  if (!currentAlbum.length) return;
+
+  setZoomState(false);
+  viewerMedia.classList.remove('zoomed');
+  viewerMedia.classList.add('grid-mode');
+  prevBtn.style.display = 'none';
+  nextBtn.style.display = 'none';
+  thumbStrip.style.display = 'none';
+  viewerMedia.innerHTML = `<div class="gallery-grid">${currentAlbum.map((item, index) => `
+    <button class="gallery-tile" data-grid-index="${index}" aria-label="Open ${esc(currentAlbumTitle)} item ${index + 1}">
+      ${currentType === 'video'
+        ? `<video src="${item}" muted playsinline preload="metadata"></video>`
+        : `<img src="${item}" alt="${esc(currentAlbumTitle)} thumbnail ${index + 1}">`}
+      <span>${index + 1}</span>
+    </button>
+  `).join('')}</div>`;
+
+  document.querySelectorAll('[data-grid-index]').forEach(tile => {
+    tile.addEventListener('click', () => {
+      currentIndex = Number(tile.dataset.gridIndex);
+      currentViewerMode = 'single';
+      renderAlbumSwitches();
+      renderViewer();
+    });
+  });
+}
+
 function renderDayChooser() {
   if (!currentAlbumMeta || !currentAlbumMeta.days?.length) return;
+  currentViewerMode = 'single';
+  viewerMedia.classList.remove('grid-mode');
   prevBtn.style.display = 'none';
   nextBtn.style.display = 'none';
   thumbStrip.style.display = 'none';
@@ -490,7 +528,13 @@ function renderAlbumSwitches() {
     ${currentAlbumMeta.days.map((day, index) => `<button class="mini-btn ${currentDayView === index ? 'active' : ''}" data-day-mode="${index}">${esc(day.title)}</button>`).join('')}
   ` : '';
 
-  albumSwitchRow.innerHTML = albumTabs + dayTabs;
+  const canShowViewModes = currentAlbum.length && (!currentAlbumMeta || !currentAlbumMeta.isWeekend || currentDayView !== null);
+  const viewTabs = canShowViewModes ? `
+    <button class="mini-btn ${currentViewerMode === 'single' ? 'active' : ''}" data-view-mode="single">Single View</button>
+    <button class="mini-btn ${currentViewerMode === 'grid' ? 'active' : ''}" data-view-mode="grid">View All</button>
+  ` : '';
+
+  albumSwitchRow.innerHTML = albumTabs + dayTabs + viewTabs;
 
   albumSwitchRow.querySelectorAll('[data-switch-type]').forEach(btn => {
     btn.addEventListener('click', () => openAlbum(btn.dataset.switchType, Number(btn.dataset.switchIndex)));
@@ -500,13 +544,27 @@ function renderAlbumSwitches() {
     btn.addEventListener('click', () => {
       const mode = btn.dataset.dayMode;
       if (mode === 'chooser') {
+        currentAlbum = [];
         currentDayView = null;
+        currentViewerMode = 'single';
         currentAlbumTitle = currentAlbumMeta.title;
         modalTitle.textContent = currentAlbumMeta.title;
         renderAlbumSwitches();
         renderDayChooser();
       } else {
         openAlbumDay(Number(mode));
+      }
+    });
+  });
+
+  albumSwitchRow.querySelectorAll('[data-view-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentViewerMode = btn.dataset.viewMode;
+      renderAlbumSwitches();
+      if (currentViewerMode === 'grid') {
+        renderGridViewer();
+      } else {
+        renderViewer();
       }
     });
   });
@@ -518,6 +576,7 @@ function openAlbumDay(dayIndex) {
   currentAlbum = day.items;
   currentIndex = 0;
   currentDayView = dayIndex;
+  currentViewerMode = 'single';
   currentAlbumTitle = `${currentAlbumMeta.title} - ${day.title}`;
   modalTitle.textContent = currentAlbumTitle;
   renderAlbumSwitches();
@@ -536,7 +595,9 @@ function openAlbum(type, albumIndex) {
   document.body.style.overflow = 'hidden';
 
   if (currentAlbumMeta.isWeekend && currentAlbumMeta.days?.length) {
+    currentAlbum = [];
     currentDayView = null;
+    currentViewerMode = 'single';
     currentAlbumTitle = currentAlbumMeta.title;
     modalTitle.textContent = currentAlbumMeta.title;
     renderAlbumSwitches();
@@ -547,6 +608,7 @@ function openAlbum(type, albumIndex) {
   currentAlbum = currentAlbumMeta.items;
   currentIndex = 0;
   currentDayView = null;
+  currentViewerMode = 'single';
   currentAlbumTitle = currentAlbumMeta.title;
   modalTitle.textContent = currentAlbumMeta.title;
   renderAlbumSwitches();
@@ -554,11 +616,13 @@ function openAlbum(type, albumIndex) {
 }
 
 function showPrev() {
+  if (currentViewerMode !== 'single' || !currentAlbum.length) return;
   currentIndex = (currentIndex - 1 + currentAlbum.length) % currentAlbum.length;
   renderViewer();
 }
 
 function showNext() {
+  if (currentViewerMode !== 'single' || !currentAlbum.length) return;
   currentIndex = (currentIndex + 1) % currentAlbum.length;
   renderViewer();
 }
@@ -567,8 +631,10 @@ function closeViewer() {
   modal.classList.remove('active');
   document.body.style.overflow = '';
   viewerMedia.innerHTML = '';
+  viewerMedia.classList.remove('grid-mode');
   thumbStrip.innerHTML = '';
   thumbStrip.style.display = 'flex';
+  currentViewerMode = 'single';
   setZoomState(false);
 }
 
@@ -599,6 +665,7 @@ let currentType = 'photo';
 let currentAlbumTitle = '';
 let currentAlbumIndex = 0;
 let currentDayView = null;
+let currentViewerMode = 'single';
 let zoomed = false;
 
 function createPageCards() {
@@ -636,7 +703,7 @@ document.addEventListener('keydown', (e) => {
     if (zoomed) setZoomState(false);
     else closeViewer();
   }
-  if (thumbStrip.style.display !== 'none') {
+  if (currentViewerMode === 'single' && thumbStrip.style.display !== 'none') {
     if (e.key === 'ArrowLeft') showPrev();
     if (e.key === 'ArrowRight') showNext();
   }

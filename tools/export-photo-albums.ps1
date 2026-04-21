@@ -1,7 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param(
-  [string]$SourceRoot = (Join-Path $PSScriptRoot "..\incoming-photo-albums"),
-  [string]$DestinationRoot = (Join-Path $PSScriptRoot "..\media\photo-albums"),
+  [string]$SourceRoot = "",
+  [string]$DestinationRoot = "",
   [int]$MaxLongEdge = 2400,
   [ValidateRange(1, 100)]
   [int]$JpegQuality = 82,
@@ -12,6 +12,14 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 Add-Type -AssemblyName System.Drawing
+
+$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $PSCommandPath }
+if (-not $SourceRoot) {
+  $SourceRoot = Join-Path $scriptRoot "..\incoming-photo-albums"
+}
+if (-not $DestinationRoot) {
+  $DestinationRoot = Join-Path $scriptRoot "..\media\photo-albums"
+}
 
 $supportedExtensions = @(".jpg", ".jpeg", ".png")
 $sourceRootFull = [System.IO.Path]::GetFullPath($SourceRoot)
@@ -215,7 +223,10 @@ foreach ($file in $files) {
   }
 }
 
-$savedBytes = [Math]::Max(0, $originalBytes - $outputBytes)
+$savedBytes = $originalBytes - $outputBytes
+if ($savedBytes -lt 0) {
+  $savedBytes = [int64]0
+}
 $savedMegabytes = [Math]::Round($savedBytes / 1MB, 2)
 $originalMegabytes = [Math]::Round($originalBytes / 1MB, 2)
 $outputMegabytes = [Math]::Round($outputBytes / 1MB, 2)

@@ -3,7 +3,7 @@ param(
   [string]$SourceFolder,
   [string]$EventDate,
   [string]$AlbumTitle,
-  [string]$DestinationRoot = (Join-Path $PSScriptRoot "..\media\photo-albums"),
+  [string]$DestinationRoot = "",
   [int]$MaxLongEdge = 2200,
   [ValidateRange(1, 100)]
   [int]$JpegQuality = 82,
@@ -19,10 +19,15 @@ $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName Microsoft.VisualBasic
 
+$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $PSCommandPath }
+if (-not $DestinationRoot) {
+  $DestinationRoot = Join-Path $scriptRoot "..\media\photo-albums"
+}
+
 $windowTitle = "Weekend Album Publisher"
-$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot ".."))
 $destinationRootFull = [System.IO.Path]::GetFullPath($DestinationRoot)
-$exportScript = Join-Path $PSScriptRoot "export-photo-albums.ps1"
+$exportScript = Join-Path $scriptRoot "export-photo-albums.ps1"
 $metadataFileName = ".mud-motion-weekend.json"
 
 function Show-Info {
