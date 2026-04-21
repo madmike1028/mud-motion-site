@@ -1,0 +1,47 @@
+HOW TO ADD A PHOTO ALBUM
+
+This is the easy version.
+
+1. Put the full-size photos in one folder somewhere outside the website folder.
+   Example: Desktop\Round 4 Saturday
+
+2. Open the website folder on the computer.
+   Example: Documents\GitHub\mud-motion-site
+
+3. Open the tools folder.
+
+4. Double-click:
+   start-photo-album-wizard.cmd
+
+5. Click the folder that has the original full-size photos.
+
+6. Type the album name exactly how it should show on the website.
+
+7. Wait for the "Album ready" message.
+
+8. The wizard will open the new website album folder for you.
+
+9. Open GitHub Desktop.
+
+10. Make sure the repo says:
+    mud-motion-site
+
+11. In the Changes list, leave the boxes checked.
+
+12. Type a short message.
+    Example: Add Round 4 Saturday photo album
+
+13. Click:
+    Commit to main
+
+14. Click:
+    Push origin
+
+15. Wait a minute, then refresh the website.
+
+IMPORTANT
+
+- Keep the original full-size photos outside the website folder.
+- The wizard makes the smaller website copies for you.
+- The homepage still rotates automatically and shows the newest albums first.
+- If a weekend album has Saturday and Sunday folders inside it, keep that folder structure. The website can use it.
