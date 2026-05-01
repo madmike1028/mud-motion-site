@@ -118,6 +118,38 @@
       pointer-events: none;
       mix-blend-mode: normal;
     }
+    .mobile-hero-copy {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+      margin: 8px auto 4px;
+    }
+    .mobile-hero-kicker {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.72);
+    }
+    .mobile-hero-title {
+      font-size: clamp(34px, 8vw, 54px);
+      font-weight: 900;
+      line-height: .96;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      text-shadow: 0 4px 18px rgba(0,0,0,.45);
+    }
+    .mobile-hero-title .title-break { display: block; }
+    .mobile-hero-subtitle {
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      text-shadow: 0 3px 10px rgba(0,0,0,.35);
+    }
     .hero-actions {
       display: flex;
       flex-wrap: wrap;
@@ -592,19 +624,107 @@
       .section-shell { width: min(92vw, var(--max-width)); }
     }
     @media (orientation: portrait) and (max-width: 900px) {
+      .hero-bg,
+      .hero-overlay,
+      .hero-vignette {
+        position: absolute;
+      }
       .hero { min-height: auto; }
       .hero-inner { min-height: auto; padding: 12px 12px 18px; }
       .hero-content { transform: none; gap: 10px; }
       .hero-content::before { display: none; }
       .hero-lower { transform: none; width: 100%; }
-      .hero-logo { width: min(92vw, 520px); margin-bottom: 0; }
+      .hero-logo-wrap { display: none; }
+      .mobile-hero-copy { display: flex; }
       .hero-actions { flex-direction: column; width: 100%; align-items: center; gap: 10px; margin-top: 0; margin-bottom: 14px; }
       .hero-action { width: min(90vw, 360px); }
-      .hero-tagline { font-size: clamp(20px, 6vw, 30px); line-height: 1.06; }
-      .hero-subtext { font-size: 15px; max-width: 94%; line-height: 1.36; }
+      .hero-tagline {
+        width: min(90vw, 360px);
+        font-size: clamp(19px, 6vw, 28px);
+        line-height: 1.08;
+        overflow-wrap: anywhere;
+        text-wrap: balance;
+      }
+      .hero-subtext {
+        width: min(90vw, 360px);
+        font-size: 15px;
+        max-width: none;
+        line-height: 1.36;
+        overflow-wrap: anywhere;
+      }
       .hero-socials { width: auto; max-width: 100%; gap: 18px; justify-content: center; margin-top: 6px; }
       .content-wrap { margin-top: 0; }
       .section-shell { width: min(92vw, var(--max-width)); }
+    }
+    @media (orientation: portrait) and (max-width: 430px) {
+      .mobile-hero-title { font-size: 28px; letter-spacing: .03em; }
+      .mobile-hero-subtitle { font-size: 11px; letter-spacing: .14em; }
+      .hero-action { width: min(88vw, 300px); }
+    }
+
+    /* Last mobile pass: keep phones away from desktop fixed-layer and tall-modal behavior. */
+    @media (max-width: 900px), (hover: none) and (pointer: coarse) {
+      body { min-width: 0; }
+      .hero-bg,
+      .hero-overlay,
+      .hero-vignette {
+        position: absolute;
+      }
+      .hero {
+        min-height: auto;
+        overflow: hidden;
+      }
+      .hero-inner {
+        min-height: auto;
+      }
+      .modal {
+        align-items: stretch;
+        padding: 0;
+      }
+      .section-title,
+      .section-subtitle,
+      .album-title,
+      .album-meta {
+        overflow-wrap: break-word;
+      }
+      .section {
+        padding: 20px 12px;
+      }
+      .section-subtitle {
+        max-width: 100%;
+        font-size: 15px;
+        line-height: 1.4;
+      }
+      .modal-box {
+        width: 100vw;
+        max-height: none;
+        height: 100dvh;
+        border-radius: 0;
+      }
+      .modal-top {
+        max-height: 34dvh;
+        overflow-y: auto;
+      }
+      .viewer {
+        min-height: 0;
+        height: 52dvh;
+      }
+      .viewer-media-wrap {
+        min-height: 0;
+        height: 52dvh;
+      }
+      .viewer-media-wrap img,
+      .viewer-media-wrap video {
+        max-height: 50dvh;
+      }
+      .thumb-strip {
+        padding: 10px;
+      }
+    }
+    @media (max-width: 430px) {
+      .section-subtitle {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -630,6 +750,11 @@
     <div class="hero-inner">
       <div class="hero-content">
         <div class="hero-logo-wrap"><img src="logo.png" alt="Mud & Motion Photography" class="hero-logo" /></div>
+        <div class="mobile-hero-copy" aria-hidden="true">
+          <div class="mobile-hero-kicker">Mud & Motion</div>
+          <div class="mobile-hero-title"><span class="title-break">Race-Day</span><span class="title-break">Media</span></div>
+          <div class="mobile-hero-subtitle">Photos, Videos, Schedule</div>
+        </div>
 
         <div class="hero-lower">
         <div class="hero-actions">
@@ -671,7 +796,7 @@
       <section class="section">
         <div class="section-title">Photo Albums</div>
         <div class="section-subtitle">
-          Tap an album and flip through the photos fast. No slow junk, just quick viewing.
+          Tap an album to flip through photos fast.
         </div>
         <div class="album-grid" id="photoAlbums"></div>
       </section>
@@ -681,7 +806,7 @@
       <section class="section">
         <div class="section-title">Video Albums</div>
         <div class="section-subtitle">
-          Test your video folders here. Open an album, play a clip, and move to the next one.
+          Open an album, play a clip, and jump to the next one.
         </div>
         <div class="album-grid" id="videoAlbums"></div>
       </section>

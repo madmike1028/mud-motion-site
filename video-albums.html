@@ -131,6 +131,24 @@ img{display:block;max-width:100%}
 @media (orientation:portrait) and (max-width:430px){
 .mobile-hero-title{font-size:26px;letter-spacing:.03em}.mobile-hero-subtitle{font-size:11px;letter-spacing:.16em}.hero-action,.mini-btn{width:min(88vw,300px)}
 }
+/* Last mobile pass: avoid fixed desktop layers and cramped modals on phones. */
+@media (max-width:900px),(hover:none) and (pointer:coarse){
+body{min-width:0}
+.hero-bg,.hero-overlay,.hero-vignette{position:absolute}
+.hero{min-height:auto;overflow:hidden}
+.hero-inner{min-height:auto}
+.modal{align-items:stretch;padding:0}
+.section-title,.section-subtitle,.album-title,.album-meta{overflow-wrap:break-word}
+.section{padding:20px 12px}
+.section-subtitle{max-width:100%;font-size:15px;line-height:1.4}
+.modal-box{width:100vw;max-height:none;height:100dvh;border-radius:0}
+.modal-top{max-height:34dvh;overflow-y:auto}
+.viewer{min-height:0;height:52dvh}
+.viewer-media-wrap{min-height:0;height:52dvh}
+.viewer-media-wrap img,.viewer-media-wrap video{max-height:50dvh}
+.thumb-strip{padding:10px}
+}
+@media (max-width:430px){.section-subtitle{font-size:14px}}
 </style>
 
 </head>
@@ -195,7 +213,7 @@ img{display:block;max-width:100%}
   <div class="section-shell">
     <section class="section">
       <div class="section-title">Video Albums</div>
-      <div class="section-subtitle">All video albums live here. Newest folders land first, older ones stay here, and weekend folders split into Saturday and Sunday automatically.</div>
+      <div class="section-subtitle">Video albums live here. Newest folders show first.<br>Weekend folders split into Saturday and Sunday.</div>
       <div class="album-grid page-grid" id="pageAlbums"></div>
     </section>
   </div>
