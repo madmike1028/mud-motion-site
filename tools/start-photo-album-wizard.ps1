@@ -2,7 +2,7 @@
 param(
   [string]$SourceFolder,
   [string]$AlbumName,
-  [string]$DestinationRoot = (Join-Path $PSScriptRoot "..\media\photo-albums"),
+  [string]$DestinationRoot = "",
   [int]$MaxLongEdge = 2200,
   [ValidateRange(1, 100)]
   [int]$JpegQuality = 82,
@@ -17,9 +17,14 @@ $ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName Microsoft.VisualBasic
 
+$scriptRoot = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $PSCommandPath }
+if (-not $DestinationRoot) {
+  $DestinationRoot = Join-Path $scriptRoot "..\media\photo-albums"
+}
+
 $windowTitle = "Photo Album Wizard"
-$exportScript = Join-Path $PSScriptRoot "export-photo-albums.ps1"
-$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
+$exportScript = Join-Path $scriptRoot "export-photo-albums.ps1"
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $scriptRoot ".."))
 $destinationRootFull = [System.IO.Path]::GetFullPath($DestinationRoot)
 
 function Show-Info {
