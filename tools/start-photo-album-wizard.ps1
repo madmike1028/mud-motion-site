@@ -7,6 +7,7 @@ param(
   [ValidateRange(1, 100)]
   [int]$JpegQuality = 82,
   [switch]$Force,
+  [switch]$SkipGit,
   [switch]$SkipOpenFolder,
   [switch]$Quiet
 )
@@ -124,6 +125,73 @@ function Normalize-AlbumName {
   return $cleanName
 }
 
+function Get-GitCommand {
+  $gitCommand = Get-Command git.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+  if ($gitCommand) {
+    return $gitCommand.Source
+  }
+
+  $desktopRoot = Join-Path $env:LOCALAPPDATA "GitHubDesktop"
+  if (Test-Path -LiteralPath $desktopRoot) {
+    $candidate = Get-ChildItem -LiteralPath $desktopRoot -Directory -Filter "app-*" |
+      Sort-Object LastWriteTime -Descending |
+      ForEach-Object { Join-Path $_.FullName "resources\app\git\cmd\git.exe" } |
+      Where-Object { Test-Path -LiteralPath $_ } |
+      Select-Object -First 1
+
+    if ($candidate) {
+      return $candidate
+    }
+  }
+
+  throw "Git was not found. Please install GitHub Desktop or Git on this computer first."
+}
+
+function Invoke-Git {
+  param(
+    [string]$GitExe,
+    [string[]]$Arguments,
+    [switch]$AllowFailure
+  )
+
+  $output = @(& $GitExe -C $repoRoot @Arguments 2>&1)
+  $exitCode = $LASTEXITCODE
+  if ($exitCode -ne 0 -and (-not $AllowFailure)) {
+    $message = ($output | ForEach-Object { $_.ToString() }) -join [Environment]::NewLine
+    if (-not $message) {
+      $message = "Git failed with exit code $exitCode."
+    }
+    throw $message
+  }
+
+  return [pscustomobject]@{
+    ExitCode = $exitCode
+    Output = $output | ForEach-Object { $_.ToString() }
+  }
+}
+
+function Get-RelativeRepoPath {
+  param([string]$Path)
+
+  $baseFullPath = [System.IO.Path]::GetFullPath($repoRoot).TrimEnd("\")
+  $targetFullPath = [System.IO.Path]::GetFullPath($Path)
+  $baseUri = New-Object System.Uri($baseFullPath + "\")
+  $targetUri = New-Object System.Uri($targetFullPath)
+  $relativeUri = $baseUri.MakeRelativeUri($targetUri)
+  return [System.Uri]::UnescapeDataString($relativeUri.ToString()).Replace("\", "/")
+}
+
+function Get-StatusPath {
+  param([string]$StatusLine)
+
+  $text = ($StatusLine -replace '^[ MARCUD?!]{2}\s+', '').Trim()
+  if ($text -match ' -> ') {
+    return ($text -split ' -> ')[-1].Trim()
+  }
+
+  return $text
+}
+
 try {
   if (-not (Test-Path -LiteralPath $exportScript)) {
     throw "Could not find the export tool at $exportScript"
@@ -172,6 +240,7 @@ try {
   }
 
   $destinationFolder = Join-Path $destinationRootFull $cleanAlbumName
+  $relativeAlbumPath = Get-RelativeRepoPath -Path $destinationFolder
   $destinationExists = Test-Path -LiteralPath $destinationFolder
   if ($destinationExists -and (-not $Force)) {
     $Force = Ask-YesNo "An album folder with this name already exists.`r`n`r`nClick Yes to replace same-name files in that album.`r`nClick No to cancel."
@@ -213,19 +282,58 @@ try {
     Start-Process explorer.exe $destinationFolder
   }
 
-  $message = @"
+  if ($SkipGit) {
+    $message = @"
 Album ready.
 
 Saved here:
 $destinationFolder
 
-Next steps:
-1. Open GitHub Desktop.
-2. Make sure this repo says mud-motion-site.
-3. In Changes, leave the boxes checked.
-4. Type a short message.
-5. Click Commit to main.
-6. Click Push origin.
+Git push was skipped because SkipGit was turned on.
+"@
+
+    if ($summary) {
+      $message += "`r`nSummary:`r`n" + ($summary -join "`r`n")
+    }
+
+    Show-Info $message
+    return
+  }
+
+  $gitExe = Get-GitCommand
+  $statusAll = Invoke-Git -GitExe $gitExe -Arguments @("status", "--porcelain")
+  $statusTarget = Invoke-Git -GitExe $gitExe -Arguments @("status", "--porcelain", "--", $relativeAlbumPath)
+
+  $targetPaths = $statusTarget.Output | Where-Object { $_.Trim() } | ForEach-Object { Get-StatusPath -StatusLine $_ }
+  if (-not $targetPaths) {
+    Show-Info @"
+No new photos were found to push.
+
+This usually means the album was already uploaded.
+"@
+    return
+  }
+
+  $outsideChanges = $statusAll.Output |
+    Where-Object { $_.Trim() } |
+    ForEach-Object { Get-StatusPath -StatusLine $_ } |
+    Where-Object { $_ -and (-not $_.StartsWith($relativeAlbumPath, [System.StringComparison]::OrdinalIgnoreCase)) }
+
+  if ($outsideChanges) {
+    throw "There are other changes in the website folder right now. Please stop here and ask for help before auto-publishing."
+  }
+
+  Invoke-Git -GitExe $gitExe -Arguments @("add", "--", $relativeAlbumPath) | Out-Null
+  Invoke-Git -GitExe $gitExe -Arguments @("commit", "-m", "Add photo album: $cleanAlbumName") | Out-Null
+  Invoke-Git -GitExe $gitExe -Arguments @("push", "origin", "main") | Out-Null
+
+  $message = @"
+Album ready and pushed.
+
+Saved here:
+$destinationFolder
+
+GitHub and Netlify should update the website shortly.
 "@
 
   if ($summary) {
